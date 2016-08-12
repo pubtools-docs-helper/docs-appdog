@@ -10,7 +10,7 @@ This topic describes how to log into and use Pivotal Cloud Foundry (PCF) Applica
 
 1. Install the plugin with the command `cf install-plugin https://plugin-location`.
 1. Target the Application Watchdog server with `cf appdog target https://appdog-server.YOUR-SYSTEM-DOMAIN`.
-1. Verify that your server is working with `cf appdog report`.
+1. Verify that your server is working with `cf appdog report`. You should see a list of applications that have been scanned.
 
 ##<a id='scanning-apps'></a> Scanning Applications
 
@@ -32,11 +32,11 @@ test-app1       test-org     test-space     2016-08-09T18:21:28.000Z   scanned s
 test-app2       test-org     test-space     2016-08-09T18:23:57.000Z   scanned successfully
 ```
 
-In the above example, you can see whether an app has successfully scanned in the `scan status` column. Application Watchdog currently only supports scanning Java and Ruby applications.
+In the above example, you can see that four applications have been successfully scanned. Application Watchdog currently only supports scanning Java and Ruby applications.
 
 ##<a id='scan-reports'></a> Showing Scan Reports
 
-To see the report on an individual application, you can run `cf appdog report my-app` if your cf CLI is currently targeting that app's org and space, or you can run `cf appdog report my-org my-space my-app`. For example:
+To see a report on the application `test-app` located in the org `test-org` and space `test-space`, you can run `cf appdog report my-org my-space my-app`. For example:
 
 ```
 $ cf appdog report test-org test-space test-app1
@@ -65,19 +65,19 @@ Additionally, you can see that the application has some outdated dependencies, a
 
 ##<a id='info-sources'></a> Information Sources
 
-Application Watchdog obtains its data from a variety of sources. This includes dependency manifests and files present in deployed applications. It obtains library version information from [rubygems.org](https://rubygems.org) and [search.maven.org](https://search.maven.org), and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
+Application Watchdog obtains its data from a variety of sources. This includes dependency manifests and files present in deployed applications. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
 
-Vulnerability information is determined using [Dependency Check](https://www.owasp.org/index.php/OWASP_Dependency_Check), [Ruby Advisory Database](https://github.com/rubysec/ruby-advisory-db) as well as other publically available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
+Vulnerability information is determined using publically available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
 
 ##<a id='notifications'></a> Email Notifications
 
-If you would like to receive emails about new vulnerabilities found in an application, you can run `cf appdog opt-in-vulnerability my-org my-space my-app`, or simply `cf appdog opt-in-vulnerability my-app` if you are targeting the app's org and space.
+If you would like to receive emails about new vulnerabilities found in an application, you can run `cf appdog opt-in-vulnerability my-org my-space my-app` to subscribe.
 
-Emails are sent to your Cloud Foundry accounts's email address if a CVE with a CVSS (severity score) of 7.0 or higher is found in the app. The email will include the name of the app, and a list of the CVEs affecting it.
+Emails are sent to your login name if a CVE with a [CVSS](https://www.first.org/cvss) score of 7.0 or higher is identified within an application. The email will include the name of the app, and a list of the CVEs affecting it.
 
-If you would like to receive emails about outdated dependencies in an application, you can run `cf appdog opt-in-dependency my-org my-space my-app`, or simply `cf appdog opt-in-dependency my-app` if you are targeting the app's org and space.
+If you would like to receive emails about outdated dependencies in an application, you can run `cf appdog opt-in-dependency my-org my-space my-app` to subscribe.
 
-Emails are sent to your Cloud Foundry accounts's email address if any dependency in the application has an available update.
+Emails are sent to your Cloud Foundry accounts's email address if any dependency in the application has a newer version available from the maintainer.
 
 You can opt into both vulnerability and dependency emails with the `cf appdog opt-in-all` command.
 
@@ -85,11 +85,12 @@ You can opt out of subscriptions either by clicking the unsubscribe link in the 
 
 ##<a id='appdog-updates'></a>Finding Applications with Outdated Dependencies
 
-To find dependencies that are outdated, you can use the command `cf appdog updates`. This command checks for dependencies that have available updates.
+To identify all outdated dependencies in an org or space or app, you can use the command `cf appdog updates`. 
 
-For example, `cf appdog updates --org test-org --space test-space` will list all outdated dependencies in the `test-org` org and `test-space` space
+For example, `cf appdog updates --org test-org --space test-space` will list all outdated dependencies in the `test-org` org and `test-space` space:
 
 ```
+$ cf appdog updates --org test-org --space test-space
 Connecting to appdog server https://appdog-server.local.pcfdev.io...
 
 
@@ -118,6 +119,7 @@ You can also request outdated dependencies in a single application with `cf appd
 To find applications using a specific dependency, you can run the command `cf appdog using`. For example, `cf appdog using tomcat` might return:
 
 ```
+$ cf appdog using tomcat
 Connecting to appdog server https://appdog-server.local.pcfdev.io...
 tomcat is used in: 1 org(s) and 1 space(s):
 
@@ -129,6 +131,7 @@ test-app2   test-org   test-space   test-app2.local.pcfdev.io
 Note that for the Java Buildpack, some dependencies may be provided by the buildpack. These are indicated by an asterisk. For example, the Java Runtime is usually injected by the buildpack:
 
 ```
+$ cf appdog using openjdk-jre
 openjdk-jre is used in: 1 org(s) and 1 space(s):
 
 App            Org        Space        URL
@@ -145,6 +148,7 @@ You can also limit your search to a given org or space with `--org` and `--space
 To find a list of applications that are vulnerable to a specific CVE, you can use the command `cf appdog cve`. For example, if you are interested in Spring applications that may be affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the command `cf appdog cve CVE-2016-5007`:
 
 ```
+$ cf appdog cve CVE-2016-5007
 CVE-2016-5007 was found in:
 
 App Name    Org        Space
@@ -158,19 +162,23 @@ You can also limit your search to a given org or space with `--org` and `--space
 To find a list of applications with vulnerabilities of a given severity, you can use the command `cf appdog cvss`. For example, if you are interested in applications that are affected by vulnerabilities with a score greater than 7, run the command `cf appdog cvss '>7'`:
 
 ```
+$ cf appdog cvss '>7'
 1 apps have a severity score >7:
 
 App         #of cve's >7   Org        Space
 test-app2   15             test-org   test-space
 ```
 
+Note that you must include quotes for `<` or `>` so that the shell does not interpret these as redirections.
+
 You can also limit your search to a given org or space with `--org` and `--space`.
-#
+
 ##<a id='appdog-license'></a> Finding Applications With Dependencies of a Given License
 
 To find a list of applications with dependencies of a given license, you can use the command `cf appdog license`. For example, to find applications with MIT licensed dependencies, run the command `cf appdog license MIT`.
 
 ```
+$ cf appdog license MIT
 MIT was found in:
 
 App Name        Org          Space          License
@@ -183,3 +191,7 @@ test-app2       test-org     test-space     MIT
 ```
 
 You can also limit your search to a given org or space with `--org` and `--space`.
+
+##<a id='additional-help'></a> Additional Help
+
+You can get a summary of all appdog commands with `cf appdog help`, or usage information on a particular command with `cf appdog help <command>`.
