@@ -191,6 +191,28 @@ test-app2       test-org     test-space     MIT
 ```
 
 You can also limit your search to a given org or space with `--org` and `--space`.
+#
+##<a id='appdog-dependencies'></a>Listing Dependencies of a Given Application
+
+To list dependencies of a given application, you can use the command `cf appdog dependencies`. For example, to list dependencies of the `appdog-server`, run the command `cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server`.
+
+```
+$ cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server
+Application Dependencies       Current Version
+actionmailer                   4.2.6
+actionpack                     4.2.6
+actionview                     4.2.6
+activejob                      4.2.6
+activemodel                    4.2.6
+activerecord                   4.2.6
+activesupport                  4.2.6
+[...]
+xml-simple                     1.1.5
+```
+
+You may specify the org and space of the app with `--org` and `--space`. If the
+org and space are not specified, then the given application will be searched
+for in the currently targeted org and space.
 
 ##<a id='additional-help'></a> Additional Help
 
