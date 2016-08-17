@@ -145,7 +145,7 @@ You can also limit your search to a given org or space with `--org` and `--space
 
 ##<a id='appdog-cve'></a> Finding Applications With a Given CVE
 
-To find a list of applications that are vulnerable to a specific CVE, you can use the command `cf appdog cve`. For example, if you are interested in Spring applications that may be affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the command `cf appdog cve CVE-2016-5007`:
+To find a list of applications that are vulnerable to a specific CVE, you can use the command `cf appdog cve`. For example, if you are interested in Spring applications that may be affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the command:
 
 ```
 $ cf appdog cve CVE-2016-5007
@@ -159,7 +159,7 @@ You can also limit your search to a given org or space with `--org` and `--space
 
 ##<a id='appdog-cvss'></a> Finding Applications With Vulnerabilities of a Given Severity
 
-To find a list of applications with vulnerabilities of a given severity, you can use the command `cf appdog cvss`. For example, if you are interested in applications that are affected by vulnerabilities with a score greater than 7, run the command `cf appdog cvss '>7'`:
+To find a list of applications with vulnerabilities of a given severity, you can use the command `cf appdog cvss`. For example, if you are interested in applications that are affected by vulnerabilities with a score greater than 7, run the command:
 
 ```
 $ cf appdog cvss '>7'
@@ -175,7 +175,7 @@ You can also limit your search to a given org or space with `--org` and `--space
 
 ##<a id='appdog-license'></a> Finding Applications With Dependencies of a Given License
 
-To find a list of applications with dependencies of a given license, you can use the command `cf appdog license`. For example, to find applications with MIT licensed dependencies, run the command `cf appdog license MIT`.
+To find a list of applications with dependencies of a given license, you can use the command `cf appdog license`. For example, to find applications with MIT licensed dependencies, run the command:
 
 ```
 $ cf appdog license MIT
@@ -194,7 +194,7 @@ You can also limit your search to a given org or space with `--org` and `--space
 #
 ##<a id='appdog-dependencies'></a>Listing Dependencies of a Given Application
 
-To list dependencies of a given application, you can use the command `cf appdog dependencies`. For example, to list dependencies of the `appdog-server`, run the command `cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server`.
+To list dependencies of a given application, you can use the command `cf appdog dependencies`. For example, to list dependencies of the `appdog-server`, run the command:
 
 ```
 $ cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server
@@ -208,6 +208,20 @@ activerecord                   4.2.6
 activesupport                  4.2.6
 [...]
 xml-simple                     1.1.5
+```
+
+You may specify the org and space of the app with `--org` and `--space`. If the
+org and space are not specified, then the given application will be searched
+for in the currently targeted org and space.
+
+##<a id='appdog-dependencies'></a>List Information about a Dependency in a Given Application
+
+To list information about a dependency in a given application, you can use the command `cf appdog dependency-info`. For example, to list information about `activerecord` in `appdog-server`, you can run:
+
+```
+$ cf appdog dependency-info --org pcfdev-org --space pcfdev-space appdog-server activerecord
+Name           Version   Latest Version   License
+activerecord   4.2.6     5.0.0.1          MIT
 ```
 
 You may specify the org and space of the app with `--org` and `--space`. If the
