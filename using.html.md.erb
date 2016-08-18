@@ -11,6 +11,7 @@ This topic describes how to log into and use Pivotal Cloud Foundry (PCF) Applica
 1. Install the plugin with the command `cf install-plugin https://plugin-location`.
 1. Target the Application Watchdog server with `cf appdog target https://appdog-server.YOUR-SYSTEM-DOMAIN`.
 1. Verify that your server is working with `cf appdog report`. You should see a list of applications that have been scanned.
+1. You can [get help](#getting-help) at any time with `cf appdog help`.
 
 ##<a id='scanning-apps'></a> Scanning Applications
 
@@ -228,6 +229,16 @@ You may specify the org and space of the app with `--org` and `--space`. If the
 org and space are not specified, then the given application will be searched
 for in the currently targeted org and space.
 
-##<a id='additional-help'></a> Additional Help
+##<a id='getting-help'></a> Getting Help
 
-You can get a summary of all appdog commands with `cf appdog help`, or usage information on a particular command with `cf appdog help <command>`.
+You can get a summary of all appdog commands with `cf appdog help`.
+You can get usage information on a particular command by using `cf appdog help <command>`, for example:
+
+```
+$ cf appdog help report
+NAME:
+   cf appdog report - Displays which user-accessible applications have been scanned
+
+USAGE:
+   cf appdog report [<orgname> <spacename>] <appname>
+```
