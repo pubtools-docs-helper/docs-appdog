@@ -53,7 +53,7 @@ If you leave the **Space** field empty, all applications in the listed org will 
 
 #### MySQL Settings
 
-The only required setting for Application Watchdog is the MySQL service plan. You can see a list of available service plans by looking in the settings for your Pivotal MySQL tile, or also by running `cf marketplace -s p-mysql` when you are logged into Cloud Foundry.
+The only required setting for Application Watchdog is the MySQL service plan. You can see a list of available service plans in your **Pivotal MySQL** tile settings, or by running `cf marketplace -s p-mysql`.
 
 For example, if you have a service plan named `1gb`:
 ![MySQL Settings](docs-appdog-mysql.png)
@@ -63,6 +63,12 @@ For example, if you have a service plan named `1gb`:
 #### Errands
 
 You can leave the default settings for this section.
+
+For reference, the **deploy** errand will push the Application Watchdog server and worker to the `system` org and `appdog` space, and creates a UAA client, and a Pivotal MySQL database instance.
+
+The **smoke test** errand makes sure the health-check endpoint (see below) is returning true for all required components, and verifies that Application Watchdog has successfully scanned itself.
+
+The **delete** errand destoys the `appdog` space, and deletes the Application Watchdog database instance and UAA client.
 
 #### Resource Config
 
@@ -76,11 +82,13 @@ You can leave the default settings for this section.
 
 Click **Apply Changes** to install the service. Review the [Using PCF Application Watchdog](using.html) topic for more information on how to connect, use, and interpret data from PCF Application Watchdog.
 
+## <a id='deploy-info'></a>Deployment Information
+#
 ### <a id='performance-issues'></a> Performance Issues
 
 By default, Application Watchdog deploys one server instance with 1.5GB of memory, and four worker instances with 1GB of memory each to the `system` org and `appdog` space.
 
-If you want to increase the number server or worker instances, you can manually target the Application Watchdog space and rescale using `cf scale`, for example:
+If you want to increase the number of server or worker instances, you can manually target the Application Watchdog space and rescale using `cf scale`, for example:
 
 ```
 cf target -o system -s appdog
@@ -90,3 +98,18 @@ cf scale -i 8 appdog-worker
 would rescale the workers from four to eight.
 
 <p class='note'>Note: Every time the deploy errand is run, it will reset the instance number and memory size for the Application Watchdog server and workers to the default values.</p>
+
+### <a id='healthcheck'></a> Healthcheck Endpoint
+
+If you are encountering problems with Application Watchdog, try to load the `/health` endpoint on the Application Watchdog server. For example:
+
+```
+$ curl https://appdog-server.example.com
+{"health":{"uaa":true,"workers":true,"db":true,"daily_scan_time":true},"optional":{"notifications":true}}
+```
+
+Each key gives a true/false value based on whether that component of Application Watchdog is functioning correctly.
+
+### <a id='connectivity-required'></a> Connectivity Requirements
+
+Application Watchdog requires access to the Internet in order to obtain its dependency, license, and vulnerability information. It will attempt to update its vulnerability database hourly.
