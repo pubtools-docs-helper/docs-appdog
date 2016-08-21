@@ -10,6 +10,8 @@ to display the docs:
 
 then go into docs-book-pcfservices directory and run 
 
+    git checkout add-appdog-docs
     bundle && bookbinder watch
+    
 
 then navigate to go to http://localhost:4567/pcf-appdog/
