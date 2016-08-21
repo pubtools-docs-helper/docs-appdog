@@ -235,10 +235,15 @@ You can get a summary of all appdog commands with `cf appdog help`.
 You can get usage information on a particular command by using `cf appdog help <command>`, for example:
 
 ```
-$ cf appdog help report
+$ cf appdog help using
 NAME:
-   cf appdog report - Displays which user-accessible applications have been scanned
+   cf appdog using - Provides a list of all apps using a given dependency
 
 USAGE:
-   cf appdog report [<orgname> <spacename>] <appname>
+   cf appdog using [command options] <dependency> [[<,>,!=]<version>] [ --org <myorg> --space <myspace>] Note: To use '<', '>', or '!=' operators, use single quotes. Ex: cf ad using jre '>1.8.0'
+
+OPTIONS:
+   --org value, -o value    Organization
+   --space value, -s value  Space
+   --buildpacks             Only apps with buildpack-added dependencies
 ```
