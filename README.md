@@ -8,4 +8,8 @@ to display the docs:
     git clone https://github.com/pivotal-cf/docs-layout-repo
     git clone https://github.com/pivotal-cf-experimental/docs-appdog
 
-then go into docs-book-pcfservices directory and run bundle && bookbinder watch. go to http://localhost:4567/pcf-appdog/
+then go into docs-book-pcfservices directory and run 
+
+    bundle && bookbinder watch
+
+then navigate to go to http://localhost:4567/pcf-appdog/
