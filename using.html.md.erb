@@ -6,11 +6,36 @@ owner: PCF Application Watchdog
 
 This topic describes how to log in to and use Pivotal Cloud Foundry (PCF) Application Watchdog.
 
-##<a id='get-started'></a> Install Plugin and Target the Application Watchdog Server
+##<a id='get-started'></a> Install the Plugin and Target the Application Watchdog Server
 
 1. Run the following command to install the plugin: `cf install-plugin https://plugin-location`.
 1. Target the Application Watchdog server: `cf appdog target https://appdog-server.YOUR-SYSTEM-DOMAIN`.
 1. Run `cf appdog report` to verify that your server works. This command displays a list of applications scanned by Application Watchdog.
+
+###Install the Application Watchdog Plugin
+
+To install the Application Watchdog plugin, perfom the following:
+
+1. Download the plugin for your platform:  
+     * https://s3.amazonaws.com/appdog-cli-images/osx/appdog-cli-0.9.0-b39-osx.tgz.
+     * **ADD LINK TO WINDOWS AND LINUX PLUGINS**
+
+1. Extract the plugin archive, which contains a single file called `appdog-cli.
+
+1. Run the following command to install the plugin: 
+   <pre class="terminal">$ cf install plugin PATH/TO/appdog-cli</pre>
+
+###Target the Application Server
+
+After installing the Application Watchdog plugin, run the following command to target the application server:
+
+   <pre class="terminal">$ cf appdog target http<span>s</span>://appdog-server.YOUR-SYSTEM-DOMAIN.</pre>
+
+###Verify the Application Server
+
+To verify that the application server is working, run the following command:
+
+  <pre class="terminal">$ cf appdog report</pre>
 
 ##<a id="help"></a> Run the Help Command 
 
