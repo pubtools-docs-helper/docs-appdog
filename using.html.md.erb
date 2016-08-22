@@ -4,24 +4,46 @@ title: Using PCF Application Watchdog
 owner: PCF Application Watchdog
 ---
 
-This topic describes how to log into and use Pivotal Cloud Foundry (PCF) Application Watchdog.
+This topic describes how to log in to and use Pivotal Cloud Foundry (PCF) Application Watchdog.
 
-##<a id='get-started'></a> Get Started with PCF Application Watchdog
+##<a id='get-started'></a> Install Plugin and Target the Application Watchdog Server
 
-1. Install the plugin with the command `cf install-plugin https://plugin-location`.
-1. Target the Application Watchdog server with `cf appdog target https://appdog-server.YOUR-SYSTEM-DOMAIN`.
-1. Verify that your server is working with `cf appdog report`. You should see a list of applications that have been scanned.
-1. You can [get help](#getting-help) at any time with `cf appdog help`.
+1. Run the following command to install the plugin: `cf install-plugin https://plugin-location`.
+1. Target the Application Watchdog server: `cf appdog target https://appdog-server.YOUR-SYSTEM-DOMAIN`.
+1. Run `cf appdog report` to verify that your server works. This command displays a list of applications scanned by Application Watchdog.
 
-##<a id='scanning-apps'></a> Scanning Applications
+##<a id="help"></a> Run the Help Command 
 
-PCF Application Watchdog provides data on application dependencies, licenses, and possible security vulnerabilities.
+To output a summary of all appdog commands, run `cf appdog help`. Run `cf appdog help <command>` to get usage information on a particular command, for example:
 
-Application Watchdog will scan an application within several minutes of deployment. An application will be rescanned whenever it has been redeployed. Applications are also rescanned daily.
+<pre class="terminal">
+$ cf appdog help using
+NAME:
+   cf appdog using - Provides a list of all apps using a given dependency
 
-To see a summary of all applications Application Watchdog has scanned, you can use the `report` command:
+USAGE:
+   cf appdog using [command options] &lt;dependency&gt; [[<,>,!=]&lt;version&gt;] 
+     [ --org &lt;myorg&gt; --space &lt;myspace&gt;] 
 
-```
+   Note: To use '<', '>', or '!=' operators, use single quotes. Ex: cf ad using jre '>1.8.0'
+
+OPTIONS:
+   --org value, -o value    Organization
+   --space value, -s value  Space
+   --buildpacks             Only apps with buildpack-added dependencies
+</pre>
+
+##<a id='scan'></a>  View Scanned Applications
+
+The following sections describe how to scan applications to obtain information.
+
+###<a id='scanning-apps'></a> Scan Applications
+
+PCF Application Watchdog provides data about application dependencies, licenses, and possible security vulnerabilities. Application Watchdog scans an application several minutes after deployment. An application is rescanned after it is redeployed. Applications are also rescanned daily.
+
+To see a summary of all applications Application Watchdog has scanned, run the `report` command:
+
+<pre class="terminal">
 $ cf appdog report
 Connecting to appdog server https://appdog-server.local.pcfdev.io...
 app name        org          space          last scan update           scan status
@@ -31,15 +53,15 @@ appdog-server   pcfdev-org   pcfdev-space   2016-08-09T18:14:04.000Z   scanned s
 appdog-worker   pcfdev-org   pcfdev-space   2016-08-09T18:14:07.000Z   scanned successfully
 test-app1       test-org     test-space     2016-08-09T18:21:28.000Z   scanned successfully
 test-app2       test-org     test-space     2016-08-09T18:23:57.000Z   scanned successfully
-```
+</pre>
 
-In the above example, you can see that four applications have been successfully scanned. Application Watchdog currently only supports scanning Java and Ruby applications.
+The above example shows that four applications have been successfully scanned. Application Watchdog currently only supports scanning Java and Ruby applications.
 
-##<a id='scan-reports'></a> Showing Scan Reports
+###<a id='scan-reports'></a> Show Scan Reports
 
-To see a report on the application `test-app` located in the org `test-org` and space `test-space`, you can run `cf appdog report my-org my-space my-app`. For example:
+To see a report on the application `test-app` located in the org `test-org` and space `test-space`, run `cf appdog report my-org my-space my-app`. For example:
 
-```
+<pre class="terminal">
 $ cf appdog report test-org test-space test-app1
 Connecting to appdog server https://appdog-server.local.pcfdev.io...
 The latest scan status for this app was: scanned
@@ -58,39 +80,41 @@ tilt              1.4.1             2.0.5                      MIT
 CVEs in Application Dependencies
 CVE             CVSS Severity   Dependency   URL                                                              CWE
 CVE-2015-3225   5.0             rack:1.5.2   https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2015-3225   CWE-19 Data Handling
-```
+</pre>
 
-In this case, you can see that `test-app1` is a Ruby Application running Ruby 2.2.4, and it was deployed with the Cloud Foundry Ruby Buildpack version 1.6.16.
+This example shows that `test-app1` is a Ruby Application running Ruby 2.2.4, and was deployed with the Cloud Foundry Ruby Buildpack version 1.6.16.
 
-Additionally, you can see that the application has some outdated dependencies, and one dependency (rack) has a published security vulnerability.
+Additionally, this output shows that the application has some outdated dependencies, and one dependency (rack) has a published security vulnerability.
 
-##<a id='info-sources'></a> Information Sources
+####<a id='info-sources'></a> Information Sources
 
-Application Watchdog obtains its data from a variety of sources. This includes dependency manifests and files present in deployed applications. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
+Application Watchdog obtains its data from multiple sources. This includes dependency manifests and files present in deployed applications. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
 
-Vulnerability information is determined using publically available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
+PCF Application Watchdog determines vulnerability information using publically available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
 
-##<a id='notifications'></a> Email Notifications
+##<a id='notifications'></a> Subscribe to Email Notifications
 
-If you would like to receive emails about new vulnerabilities found in an application, you can run `cf appdog opt-in-vulnerability my-org my-space my-app` to subscribe.
+To receive emails about new vulnerabilities found in an application, run the `cf appdog opt-in-vulnerability my-org my-space my-app` command.
 
-Emails are sent to your login name if a CVE with a [CVSS](https://www.first.org/cvss) score of 7.0 or higher is identified within an application. The email will include the name of the app, and a list of the CVEs affecting it.
+PCF Application Watchdog sends emails to your login name if a CVE with a [CVSS](https://www.first.org/cvss) score of 7.0 or higher is identified within an application. The email includes the name of the app, and a list of the CVEs affecting it.
 
-If you would like to receive emails about outdated dependencies in an application, you can run `cf appdog opt-in-dependency my-org my-space my-app` to subscribe.
+To receive emails about outdated dependencies in an application, run `cf appdog opt-in-dependency my-org my-space my-app` to subscribe.
 
 Emails are sent to your Cloud Foundry accounts's email address if any dependency in the application has a newer version available from the maintainer.
 
-You can opt into both vulnerability and dependency emails with the `cf appdog opt-in-all` command.
+You can subscribe to both vulnerability and dependency emails using the `cf appdog opt-in-all` command.
 
-You can opt out of subscriptions either by clicking the unsubscribe link in the email, or with `cf appdog opt-out-all my-app`.
+You can opt out of subscriptions by either clicking the unsubscribe link in the email, or with `cf appdog opt-out-all my-app`.
 
-##<a id='appdog-updates'></a>Finding Applications with Outdated Dependencies
+## <a id='find'></a> Find Apps by Property
 
-To identify all outdated dependencies in an org or space or app, you can use the command `cf appdog updates`. 
+The following sections describe how to find application based on specific characteristics.
 
-For example, `cf appdog updates --org test-org --space test-space` will list all outdated dependencies in the `test-org` org and `test-space` space:
+###<a id='appdog-updates'></a>Find Applications with Outdated Dependencies
 
-```
+To identify all outdated dependencies in an org or space or app, use the command `cf appdog updates`.  For example, the `cf appdog updates --org test-org --space test-space` command lists all outdated dependencies in the `test-org` org and `test-space` space:
+
+<pre class="terminal">
 $ cf appdog updates --org test-org --space test-space
 Connecting to appdog server https://appdog-server.local.pcfdev.io...
 
@@ -109,17 +133,18 @@ Updates for:
 
 
 * denotes the dependency was added by a buildpack
-```
+</pre>
 
-The output will include the app name, outdated dependency, and currently available version.
+The output includes the app name, outdated dependency, and currently available version.
 
-You can also request outdated dependencies in a single application with `cf appdog updates --org test-org --space test-space app-name`.
+To find outdated dependencies for a single application, use the `cf appdog updates --org test-org --space test-space app-name` command.
 
-##<a id='appdog-using'></a> Finding Applications Using a Given Library
+###<a id='appdog-using'></a> Find Applications Using a Specific Library
 
-To find applications using a specific dependency, you can run the command `cf appdog using`. For example, `cf appdog using tomcat` might return:
+To find applications using a specific dependency, run the `cf appdog using` command. For example, `cf appdog using tomcat` returns:
 
-```
+
+<pre class="terminal">
 $ cf appdog using tomcat
 Connecting to appdog server https://appdog-server.local.pcfdev.io...
 tomcat is used in: 1 org(s) and 1 space(s):
@@ -127,58 +152,63 @@ tomcat is used in: 1 org(s) and 1 space(s):
 App         Org        Space        URL
 test-app2   test-org   test-space   test-app2.local.pcfdev.io
 * denotes the dependency was added by a buildpack
-```
+</pre>
 
-Note that for the Java Buildpack, some dependencies may be provided by the buildpack. These are indicated by an asterisk. For example, the Java Runtime is usually injected by the buildpack:
+For the Java Buildpack, some dependencies may be provided by the buildpack. These are indicated by an asterisk. For example, the Java Runtime is usually injected by the buildpack:
 
-```
+<pre class="terminal">
 $ cf appdog using openjdk-jre
 openjdk-jre is used in: 1 org(s) and 1 space(s):
 
 App            Org        Space        URL
 test-app2(*)   test-org   test-space   test-app2.local.pcfdev.io
 * denotes the dependency was added by a buildpack
-```
+</pre>
 
-You can optionally specify a dependency version, or range of versions, with an optional second argument. For example, `cf appdog using spring 4.2.7`, or `cf appdog using tomcat '<8.2'`. Note that you must include quotes for `<` or `>` so that the shell does not interpret these as redirections.
+Optionally, specify a dependency version, or range of versions, with a second argument as shown in the following commands: 
 
-You can also limit your search to a given org or space with `--org` and `--space`.
+* `cf appdog using spring 4.2.7` 
+* `cf appdog using tomcat '<8.2>'`
 
-##<a id='appdog-cve'></a> Finding Applications With a Given CVE
+<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret these as redirections.</p> 
 
-To find a list of applications that are vulnerable to a specific CVE, you can use the command `cf appdog cve`. For example, if you are interested in Spring applications that may be affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the command:
+To limit your search to a specific org or space us the `--org` and `--space` options.
 
-```
+###<a id='appdog-cve'></a> Find Applications with a Given CVE
+
+To find a list of applications that are vulnerable to a specific CVE, use the command `cf appdog cve`. For example, to view Spring applications that are affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the following command:
+
+<pre class="terminal">
 $ cf appdog cve CVE-2016-5007
 CVE-2016-5007 was found in:
 
 App Name    Org        Space
 test-app2   test-org   test-space
-```
+</pre>
 
-You can also limit your search to a given org or space with `--org` and `--space`.
+To limit your search to a specific org or space, use the `--org` and `--space` options.
 
-##<a id='appdog-cvss'></a> Finding Applications With Vulnerabilities of a Given Severity
+###<a id='appdog-cvss'></a> Find Applications with Vulnerabilities of a Given Severity
 
 To find a list of applications with vulnerabilities of a given severity, you can use the command `cf appdog cvss`. For example, if you are interested in applications that are affected by vulnerabilities with a score greater than 7, run the command:
 
-```
+<pre class="terminal">
 $ cf appdog cvss '>7'
 1 apps have a severity score >7:
 
 App         #of cve's >7   Org        Space
 test-app2   15             test-org   test-space
-```
+</pre>
 
 Note that you must include quotes for `<` or `>` so that the shell does not interpret these as redirections.
 
-You can also limit your search to a given org or space with `--org` and `--space`.
+To limit your search to a specific org or space, use the `--org` and `--space` options.
 
-##<a id='appdog-license'></a> Finding Applications With Dependencies of a Given License
+###<a id='appdog-license'></a> Find Applications with Dependencies of a Given License
 
 To find a list of applications with dependencies of a given license, you can use the command `cf appdog license`. For example, to find applications with MIT licensed dependencies, run the command:
 
-```
+<pre class="terminal">
 $ cf appdog license MIT
 MIT was found in:
 
@@ -189,15 +219,19 @@ appdog-worker   pcfdev-org   pcfdev-space   MIT
 appdog-worker   pcfdev-org   pcfdev-space   New Relic,MIT,ruby
 test-app1       test-org     test-space     MIT
 test-app2       test-org     test-space     MIT
-```
+</pre>
 
 You can also limit your search to a given org or space with `--org` and `--space`.
-#
-##<a id='appdog-dependencies'></a>Listing Dependencies of a Given Application
+
+##<a id='list'></a>List App Dependencies
+
+The following sections describe how to list app dependencies.
+
+###<a id='appdog-dependencies'></a>List Dependencies of an Application
 
 To list dependencies of a given application, you can use the command `cf appdog dependencies`. For example, to list dependencies of the `appdog-server`, run the command:
 
-```
+<pre class="terminal">
 $ cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server
 Application Dependencies       Current Version
 actionmailer                   4.2.6
@@ -209,41 +243,24 @@ activerecord                   4.2.6
 activesupport                  4.2.6
 [...]
 xml-simple                     1.1.5
-```
+</pre>
 
-You may specify the org and space of the app with `--org` and `--space`. If the
+To specify the org and space of the app, use the `--org` and `--space` options. If the
 org and space are not specified, then the given application will be searched
 for in the currently targeted org and space.
 
-##<a id='appdog-dependencies'></a>List Information about a Dependency in a Given Application
+###<a id='appdog-dependencies'></a>List Information about a Dependency in a Given Application
 
 To list information about a dependency in a given application, you can use the command `cf appdog dependency-info`. For example, to list information about `activerecord` in `appdog-server`, you can run:
 
-```
+<pre class="terminal">
 $ cf appdog dependency-info --org pcfdev-org --space pcfdev-space appdog-server activerecord
 Name           Version   Latest Version   License
 activerecord   4.2.6     5.0.0.1          MIT
-```
+</pre>
 
 You may specify the org and space of the app with `--org` and `--space`. If the
 org and space are not specified, then the given application will be searched
 for in the currently targeted org and space.
 
-##<a id='getting-help'></a> Getting Help
 
-You can get a summary of all appdog commands with `cf appdog help`.
-You can get usage information on a particular command by using `cf appdog help <command>`, for example:
-
-```
-$ cf appdog help using
-NAME:
-   cf appdog using - Provides a list of all apps using a given dependency
-
-USAGE:
-   cf appdog using [command options] <dependency> [[<,>,!=]<version>] [ --org <myorg> --space <myspace>] Note: To use '<', '>', or '!=' operators, use single quotes. Ex: cf ad using jre '>1.8.0'
-
-OPTIONS:
-   --org value, -o value    Organization
-   --space value, -s value  Space
-   --buildpacks             Only apps with buildpack-added dependencies
-```

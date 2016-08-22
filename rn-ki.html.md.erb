@@ -6,21 +6,22 @@ owner: Appdog
 ## Version 1.0.0-beta0
 **Release Date: TBD 2016**
 
-## Notes
-* This is the first beta release of PCF Application Watchdog
-* This release supports scanning Java and Ruby applications
-* Dependency and License information is considered reliable
+### Notes
+* This is the first beta release of PCF Application Watchdog.
+* This release supports scanning Java and Ruby applications.
+* Dependency and License information is considered reliable.
 
-## Known Issues
+### Known Issues
 * Vulnerability detection is in alpha. There may be some false positives or undetected CVEs.
-* Deployment will fail if you try to use a MySQL service plan with size under 1GB
-* If a deploy fails for any reason, it may be necessary to manually destroy the Application Watchdog space and database before retrying, e.g. with
+* Deployment fails if you try to use a MySQL service plan with size under 1GB.
+* If a deploy fails for any reason, manually destroy the Application Watchdog space and database before retrying. Run the following commands:
 
-```
-cf target -o system
-cf delete-space appdog
-cf delete-service appdog_db
-```
+	<pre class="terminal">
+	$ cf target -o system
+	$ cf delete-space appdog
+	$ cf delete-service appdog_db
+	</pre>
+
 
 * Email notifications only work with PCF notifications in the Elastic Runtime tile.
-* Application Watchdog will only function if connected to the internet. There is no support for airgapped environments or proxies.
+* Application Watchdog only functions if connected to the internet. There is no support for airgapped environments or proxies.
