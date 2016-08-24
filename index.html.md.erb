@@ -31,10 +31,10 @@ To install the Application Watchdog plugin, perfom the following:
      * https://s3.amazonaws.com/appdog-cli-images/osx/appdog-cli-0.9.0-b39-osx.tgz.
      * **ADD LINK TO WINDOWS AND LINUX PLUGINS**
 
-1. Extract the plugin archive, which contains a single file called `appdog-cli.
+1. Extract the plugin archive, which contains a single file called `appdog-cli` in a appdog-cli folder.
 
 1. Run the following command to install the plugin: 
-   <pre class="terminal">$ cf install plugin PATH/TO/appdog-cli</pre>
+   <pre class="terminal">$ cf install plugin PATH/TO/appdog-cli/appdog-cli</pre>
 
 ###Target the Application Server
 
@@ -91,7 +91,7 @@ test-app2       test-org     test-space     2016-08-09T18:23:57.000Z   scanned s
 
 ###<a id='scan-reports'></a> View Scan Reports
 
-To see a report on the application `test-appl` located in the org `test-org` and space `test-space`, run `cf appdog report my-org my-space my-app`. For example:
+To see a report on the application `test-appl` located in the org `test-org` and space `test-space`, run `cf appdog report test-org test-space test-app1`. For example:
 
 <pre class="terminal">
 $ cf appdog report test-org test-space test-app1
@@ -120,6 +120,9 @@ The output also shows that the application has some outdated dependencies, and t
 
 ##<a id='notifications'></a> Subscribe to Email Notifications
 
+<p class="note"><strong>Note</strong>: If the Cloud Foundry Notifications service is not installed in your PCF deployment, notifications will be disabled.</p>
+
+
 Use the commands in the list below to subscribe to or opt out of email notifications:
 
 * **Vulnerabilities**: To receive emails about new vulnerabilities found in an application, run the following command:
@@ -134,7 +137,10 @@ Use the commands in the list below to subscribe to or opt out of email notificat
 
 For CVE's, PCF Application Watchdog sends emails to your login name if a CVE with a [Common Vulnerability Scoring System (CVSS)](https://www.first.org/cvss) score of 7.0 or higher is identified within an application. 
 
-For Dependencies, emails are sent to your Cloud Foundry email address if any dependency in the application has a newer version available from the maintainer. The email includes the name of the app, and a list of the CVEs affecting it. 
+For Dependencies, emails are sent to your login name if any dependency in the application has a newer version available from the maintainer. The email includes the name of the app, and a list of the CVEs affecting it. 
+
+<p class="note"><strong>Note</strong>: If your login name is not an email address, you will not receive notification emails.</p>
+
 
 ## <a id='find'></a> Find Apps by Property
 
@@ -187,9 +193,9 @@ test-app2   test-org   test-space   test-app2.local.pcfdev.io
 Optionally, specify a dependency version, or range of versions, with a second argument as shown in the following commands: 
 
 * `cf appdog using spring 4.2.7` 
-* `cf appdog using tomcat '<8.2>'`
+* `cf ad using jdk '>1.8.0'`
 
-<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret these as redirections.</p> 
+<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret redirections.</p> 
 
 To limit your search to a specific org or space us the `--org` and `--space` options.
 
@@ -210,7 +216,7 @@ test-app2(*)   test-org   test-space   test-app2.local.pcfdev.io
 To list applications vulnerable to a specific CVE, run `cf appdog cve`. For example, to view Spring applications affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the following command:
 
 <pre class="terminal">
-$  
+$ cf appdog cve CVE-2016-5007
 CVE-2016-5007 was found in:
 
 App Name    Org        Space
@@ -231,13 +237,13 @@ App         #of cve's >7   Org        Space
 test-app2   15             test-org   test-space
 </pre>
 
-<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret these as redirections.</p>
+<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret redirections.</p>
 
 To limit your search to a specific org or space, use the `--org` and `--space` options.
 
-###<a id='appdog-license'></a> Find Applications with Dependencies on a Specific License
+###<a id='appdog-license'></a> Find Applications with Dependencies using a Specific License
 
-To list applications with dependencies on a specific license, run `cf appdog license`. For example, to list applications with MIT licensed dependencies, run the following command:
+To list applications with dependencies using a specific license, run `cf appdog license`. For example, to list applications with MIT licensed dependencies, run the following command:
 
 <pre class="terminal">
 $ cf appdog license MIT
@@ -281,12 +287,12 @@ an org and space, the command returns information for the currently targeted org
 
 ###<a id='appdog-dependencies'></a>List Information about a Dependency for a Specific Application
 
-To list information about a dependency for a specific application, run `cf appdog dependency-info`. For example, to list information about `activerecord` for `appdog-server`, you can run:
+To list information about a dependency for a specific application, run `cf appdog dependency-info`. For example, to list information about `org.springframework:spring-beans` for `spring-music`, you can run:
 
 <pre class="terminal">
-$ cf appdog dependency-info --org pcfdev-org --space pcfdev-space appdog-server activerecord
-Name           Version   Latest Version   License
-activerecord   4.2.6     5.0.0.1          MIT
+$ cf appdog dependency-info --org pcfdev-org --space pcfdev-space spring-music org.springframework:spring-beans
+Name                               Version         Latest Version   License
+org.springframework:spring-beans   4.2.6.RELEASE   4.3.2.RELEASE    The Apache Software License, Version 2.0
 </pre>
 
 To specify the org and space of the app, use the `--org` and `--space` options. If you do not specify
