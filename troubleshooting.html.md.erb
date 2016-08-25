@@ -1,0 +1,44 @@
+---
+title: Troubleshooting PCF Application Watchdog
+owner: PCF Application Watchdog
+---
+
+## <a id='performance-issues'></a> Troubleshoot Performance Issues
+<hr>
+### Symptom
+
+Q:  What is the symptom if Application Watchdog does not have enough workers?
+
+### Explanation
+
+By default, Application Watchdog deploys one server instance with 1.5GB of memory and four worker instances with 1GB of memory each to the `system` org and `appdog` space. 
+In some cases, this is not sufficient.
+
+### Solution
+
+Increase the number of server or worker instances by manually targetting the Application Watchdog space and rescaling using `cf scale`. 
+For example, the following commands rescale the workers from four to eight:
+
+<pre class="terminal">
+$ cf target -o system -s appdog
+$ cf scale -i 8 appdog-worker
+</pre>
+
+<p class='note'><strong>Note</strong>: Every time the deploy errand runs, it resets the instance number and memory size for the Application Watchdog server and workers to the default values.</p>
+<hr>
+### Symptom
+
+Problems... of what nature?
+
+### Solution
+
+Load the `/health` endpoint on the Application Watchdog server. For example, the following commands ....
+
+<pre class="terminal">
+$ curl https://appdog-server.example.com
+{"health":{"uaa":true,"workers":true,"db":true,"daily_scan_time":true},"optional":{"notifications":true}}
+</pre>
+
+Each key gives a true/false value based on whether that component of Application Watchdog is functioning correctly.
+
+<hr>

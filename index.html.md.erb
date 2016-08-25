@@ -1,304 +1,43 @@
 ---
 breadcrumb: PCF Application Watchdog Documentation
-title: Using PCF Application Watchdog
+title: PCF Application Watchdog
 owner: PCF Application Watchdog
 ---
 
-<p class="note"><strong>Note</strong>: Pivotal Cloud Foundry (PCF) Application Watchdog is currently in an internal beta.</p>
+This topic introduces the Pivotal Cloud Foundry (PCF) Application Watchdog service. 
 
-This topic describes how to log in to and use Application Watchdog. Application Watchdog monitors information about apps deployed on Cloud Foundry, including:
+##<a id="overview"></a>Overview
+The Application Watchdog service monitors information about apps deployed on Cloud Foundry, including:
 
 * Tracking app dependencies
 * Identifying outdated dependencies
 * Listing dependency licenses
 * Detecting known security vulnerabilities in dependencies
 
-Application Watchdog obtains its data from multiple sources. This includes dependency manifests and files present in deployed apps. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
-
-PCF Application Watchdog determines vulnerability information using publically available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
-
 <p class="note"><strong>Note</strong>: Application Watchdog currently only supports scanning Java and Ruby apps.</p>
 
-##<a id='get-started'></a> Install the Plugin and Target the Application Watchdog Server
-
-The following sections describe how to install the Application Watchdog plugin and target the application server.
-
-###Install the Application Watchdog Plugin
-
-To install the Application Watchdog plugin, perfom the following:
-
-1. Download the plugin for your platform:  
-     * [OSX](https://drive.google.com/uc?export=download&id=0B_mzIaaB_7qaenBNdTB1M1J5M3c)
-     * [Windows](https://drive.google.com/uc?export=download&id=0B_mzIaaB_7qaeVBIanpad3Y4S2s)
-     * [Linux](https://drive.google.com/uc?export=download&id=0B_mzIaaB_7qaZHNkRC10bDgtZzQ)
-     
-1. Extract the plugin archive, which contains a single file called `appdog-cli` in an appdog-cli folder.
-
-1. Run the following command to install the plugin: 
-   <pre class="terminal">$ cf install plugin PATH/TO/appdog-cli/appdog-cli</pre>
-
-###Target the Application Server
-
-After installing the Application Watchdog plugin, run the following command to target the application server:
-
-   <pre class="terminal">$ cf appdog target http<span>s</span>://appdog-server.YOUR-SYSTEM-DOMAIN.</pre>
-
-###Verify the Application Server
-
-To verify that the application server is working, run the following command:
-
-  <pre class="terminal">$ cf appdog report</pre>
-
-##<a id="help"></a> Run the Help Command 
-
-To output a summary of all appdog commands, run `cf appdog help`. Run `cf appdog help <command>` to get usage information on a particular command, for example:
-
-<pre class="terminal">
-$ cf appdog help using
-NAME:
-   cf appdog using - Provides a list of all apps using a given dependency
-
-USAGE:
-   cf appdog using [command options] &lt;dependency&gt; [[<,>,!=]&lt;version&gt;] 
-     [ --org &lt;myorg&gt; --space &lt;myspace&gt;] 
-
-   Note: To use '<', '>', or '!=' operators, use single quotes. Ex: cf ad using jre '>1.8.0'
-
-OPTIONS:
-   --org value, -o value    Organization
-   --space value, -s value  Space
-   --buildpacks             Only apps with buildpack-added dependencies
-</pre>
-
-##<a id='scan'></a>  View Scanned Apps
-
-The following sections describe how to list apps and view their scan reports. 
-Application Watchdog scans an app several minutes after deployment and rescans the app after each deployment. 
-Application Watchdog also rescans apps daily.
-
-###<a id='scanning-apps'></a> List Apps
-
-To see a summary of all apps scanned by Application Watchdog, run the `report` command. The following example shows four successfully scanned apps. 
-
-<pre class="terminal">
-$ cf appdog report
-Connecting to appdog server https://appdog-server.local.pcfdev.io...
-app name        org          space          last scan update           scan status
-apps-manager    system       system         2016-08-09T18:13:12.000Z   failed (language not supported)
-notifications   pcfdev-org   pcfdev-space   2016-08-09T18:13:13.000Z   failed (language not supported)
-appdog-server   pcfdev-org   pcfdev-space   2016-08-09T18:14:04.000Z   scanned successfully
-appdog-worker   pcfdev-org   pcfdev-space   2016-08-09T18:14:07.000Z   scanned successfully
-test-app1       test-org     test-space     2016-08-09T18:21:28.000Z   scanned successfully
-test-app2       test-org     test-space     2016-08-09T18:23:57.000Z   scanned successfully
-</pre>
-
-###<a id='scan-reports'></a> View Scan Reports
-
-To see a report on the app `test-appl` located in the org `test-org` and space `test-space`, run `cf appdog report test-org test-space test-app1`. For example:
-
-<pre class="terminal">
-$ cf appdog report test-org test-space test-app1
-Connecting to appdog server https://appdog-server.local.pcfdev.io...
-The latest scan status for this app was: scanned
-
-Detected Buildpack Name / Version: ruby 1.6.16
-
-Detected Language & Version: ruby 2.2.4p230 (2015-12-16 revision 53155) [x86_64-linux]
-
-App Dependencies
-library name      library version   latest version available   license
-rack              1.5.2             2.0.1                      MIT
-rack-protection   1.5.2             1.5.3                      MIT
-sinatra           1.4.4             1.4.7                      MIT
-tilt              1.4.1             2.0.5                      MIT
-
-CVEs in App Dependencies
-CVE             CVSS Severity   Dependency   URL                                                              CWE
-CVE-2015-3225   5.0             rack:1.5.2   https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2015-3225   CWE-19 Data Handling
-</pre>
-
-This example shows that `test-app1` is a Ruby app running Ruby 2.2.4, and deployed with the Cloud Foundry Ruby Buildpack version 1.6.16.
-
-The output also shows that the app has some outdated dependencies, and the rack dependency has a published security vulnerability.
-
-##<a id='notifications'></a> Subscribe to Email Notifications
-
-<%= vars.appdog_notifications %>
-
-
-Use the commands in the list below to subscribe to or opt out of email notifications:
-
-* **Vulnerabilities**: To receive emails about new vulnerabilities found in an app, run the following command:
-   <pre class="terminal">$ cf appdog opt-in-vulnerability MY-ORG MY-SPACE MY-APP command.</pre>
-* **Dependencies**: To receive emails about outdated dependencies in an app, run the following command: 
-   <pre class="terminal">$ cf appdog opt-in-dependency MY-ORG MY-SPACE MY-APP</pre>
-* **Dependencies and Vulnerabilities**: Subscribe to both vulnerability and dependency emails by running the following command:
-   <pre class="terminal">$ cf appdog opt-in-all</pre>
-* **No Emails**: Opt out of subscriptions by either clicking the unsubscribe link in the email, or by running the following command: 
-   <pre class="terminal">$ cf appdog opt-out-all MY-APP</pre>
-
-
-For CVEs, Application Watchdog sends emails to your login name if a CVE with a [Common Vulnerability Scoring System (CVSS)](https://www.first.org/cvss) score of 7.0 or higher is identified within an app. 
-
-For dependencies, Application Watchdog sends emails to your login name if any dependency in the app has a newer version available from the maintainer. The email includes the name of the app and a list of the CVEs affecting it.
-
-<p class="note"><strong>Note</strong>: Your login name must be an email address if you want to receive notification emails.</p>
-
-
-## <a id='find'></a> Find Apps by Characteristic
-
-The following sections describe how to find app based on specific characteristics.
-
-###<a id='appdog-updates'></a>Find Apps with Outdated Dependencies
-
-To identify all outdated dependencies in an org or space or app, use the `cf appdog updates` command.  For example, the following command lists all outdated dependencies in `test-org` and `test-space`:
-
-<pre class="terminal">
-$ cf appdog updates --org test-org --space test-space
-Connecting to appdog server https://appdog-server.local.pcfdev.io...
-
-
-Updates for:
-
-   Dependency Name                                           Org        Space        App_Name    Current         Latest
-   ch.qos.logback:logback-classic                            test-org   test-space   test-app2   1.1.5           1.1.7
-   ch.qos.logback:logback-core                               test-org   test-space   test-app2   1.1.5           1.1.7
-   org.springframework.boot:spring-boot-starter-web          test-org   test-space   test-app2   1.3.3.RELEASE   1.4.0.RELEASE
-   org.yaml:snakeyaml                                        test-org   test-space   test-app2   1.16            1.17
-   rack                                                      test-org   test-space   test-app1   1.5.2           2.0.1
-   rack-protection                                           test-org   test-space   test-app1   1.5.2           1.5.3
-   sinatra                                                   test-org   test-space   test-app1   1.4.4           1.4.7
-   tilt                                                      test-org   test-space   test-app1   1.4.1           2.0.5
-
-
-* denotes the dependency was added by a buildpack
-</pre>
-
-To find outdated dependencies for a single app, run the following command:
-
-<pre class="terminal">$ cf appdog updates --org test-org --space test-space test-app</pre>
-
-###<a id='appdog-using'></a> Find Apps Using a Specific Library
-
-To find apps using a specific dependency, run the `cf appdog using` command. For example, `cf appdog using tomcat` returns the following:
-
-
-<pre class="terminal">
-$ cf appdog using tomcat
-Connecting to appdog server https://appdog-server.local.pcfdev.io...
-tomcat is used in: 1 org(s) and 1 space(s):
-
-App         Org        Space        URL
-test-app2   test-org   test-space   test-app2.local.pcfdev.io
-* denotes the dependency was added by a buildpack
-</pre>
-
-Optionally, specify a dependency version, or range of versions, with a second argument as shown in the following commands: 
-
-* `cf appdog using spring 4.2.7` 
-* `cf ad using jdk '>1.8.0'`
-
-<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret redirections.</p> 
-
-To limit your search to a specific org or space us the `--org` and `--space` options.
-
-The Java Buildpack my provide some dependencies, indicated by an asterisk. For example, the buildpack usually injects Java Runtime:
-
-<pre class="terminal">
-$ cf appdog using openjdk-jre
-openjdk-jre is used in: 1 org(s) and 1 space(s):
-
-App            Org        Space        URL
-test-app2(*)   test-org   test-space   test-app2.local.pcfdev.io
-* denotes the dependency was added by a buildpack
-</pre>
-
-
-###<a id='appdog-cve'></a> Find Apps with a Given CVE
-
-To list apps vulnerable to a specific CVE, run `cf appdog cve`. For example, to view Spring apps affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the following command:
-
-<pre class="terminal">
-$ cf appdog cve CVE-2016-5007
-CVE-2016-5007 was found in:
-
-App Name    Org        Space
-test-app2   test-org   test-space
-</pre>
-
-To limit your search to a specific org or space, use the `--org` and `--space` options.
-
-###<a id='appdog-cvss'></a> Find Apps with Vulnerabilities of a Specific Severity
-
-To list apps with vulnerabilities of a specific severity, run `cf appdog cvss`. For example, to list apps affected by vulnerabilities with a score greater than 7, run the following command:
-
-<pre class="terminal">
-$ cf appdog cvss '>7'
-1 apps have a severity score >7:
-
-App         #of cve's >7   Org        Space
-test-app2   15             test-org   test-space
-</pre>
-
-<p class="note"><strong>Note</strong>: You must include quotes for <code><</code> or <code>></code> so that the shell does not interpret redirections.</p>
-
-To limit your search to a specific org or space, use the `--org` and `--space` options.
-
-###<a id='appdog-license'></a> Find Apps with Dependencies Using a Specific License
-
-To list apps with dependencies using a specific license, run `cf appdog license`. For example, to list apps with MIT licensed dependencies, run the following command:
-
-<pre class="terminal">
-$ cf appdog license MIT
-MIT was found in:
-
-App Name        Org          Space          License
-appdog-server   pcfdev-org   pcfdev-space   MIT
-appdog-server   pcfdev-org   pcfdev-space   New Relic,MIT,ruby
-appdog-worker   pcfdev-org   pcfdev-space   MIT
-appdog-worker   pcfdev-org   pcfdev-space   New Relic,MIT,ruby
-test-app1       test-org     test-space     MIT
-test-app2       test-org     test-space     MIT
-</pre>
-
-You can also limit your search to a given org or space with `--org` and `--space`.
-
-##<a id='list'></a>List App Dependencies
-
-The following sections describe how to list app dependencies.
-
-###<a id='appdog-dependencies'></a>List Dependencies of an App
-
-To list dependencies of a given app, you can use the command `cf appdog dependencies`. For example, to list dependencies of the `appdog-server`, run the command:
-
-<pre class="terminal">
-$ cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server
-Application Dependencies       Current Version
-actionmailer                   4.2.6
-actionpack                     4.2.6
-actionview                     4.2.6
-activejob                      4.2.6
-activemodel                    4.2.6
-activerecord                   4.2.6
-activesupport                  4.2.6
-[...]
-xml-simple                     1.1.5
-</pre>
-
-To specify the org and space of the app, use the `--org` and `--space` options. If you do not specify
-an org and space, the command returns information for the currently targeted org and space.
-
-###<a id='appdog-dependencies'></a>List Information about a Dependency for a Specific App
-
-To list information about a dependency for a specific app, run `cf appdog dependency-info`. For example, to list information about `org.springframework:spring-beans` for `spring-music`, you can run:
-
-<pre class="terminal">
-$ cf appdog dependency-info --org pcfdev-org --space pcfdev-space spring-music org.springframework:spring-beans
-Name                               Version         Latest Version   License
-org.springframework:spring-beans   4.2.6.RELEASE   4.3.2.RELEASE    The Apache Software License, Version 2.0
-</pre>
-
-To specify the org and space of the app, use the `--org` and `--space` options. If you do not specify
-an org and space, the command returns information for the currently targeted org and space.
-
-
+Application Watchdog obtains its data from multiple sources. This includes dependency manifests and files present in deployed apps. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
+
+Application Watchdog determines vulnerability information using publicly available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
+
+##<a id="snapshot"></a> Product Snapshot
+
+<dl>
+<dt>Current PCF Application Watchdog details:</dt>
+<dd><strong>Version</strong>: 1.0.0 </dd>
+<dd><strong>Release date</strong>: September 2016</dd>
+<dd><strong>Software component version</strong>:  </dd>
+<dd><strong>Compatible Ops Manager Version(s)</strong>: v1.7.x</dd>
+<dd><strong>Compatible Elastic Runtime version(s)</strong>: v1.7.x</dd>
+<dd><strong>vSphere support?</strong> Yes</dd>
+<dd><strong>AWS support?</strong> Yes</dd>
+</dl>
+
+##<a id="snapshot"></a> Guide to PCF Application Watchdog
+
+The Application Watchdog tile and service are documented in the following topics:
+
+* [Installing PCF Application Watchdog](installing.html)
+* [Using PCF Application Watchdog](using.html)
+* [Troubleshooting PCF Application Watchdog](troubleshooting.html)
+* [Release Notes and Known Issues](rn-ki.html)

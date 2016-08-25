@@ -4,109 +4,49 @@ title: Installing the PCF Application Watchdog Tile
 owner: PCF Application Watchdog
 ---
 
-This topic describes how to install and deploy the PCF Application Watchdog tile.
+This topic describes how to install and deploy the Pivotal Cloud Foundry (PCF) Application Watchdog tile.
 
-## <a id='install'></a>Installing the Application Watchdog Tile
+## <a id='pre-reqs'></a>Prerequisites
 
-The following topics describe how to install the PCF Application Watchdog Tile.
-
-### <a id='pre-reqs'></a>Prerequisites
-
-Before installing the Application Watchdog tile, ensure you have installed the following tiles:
+Before installing the Application Watchdog tile, ensure that you have following: 
 
 * [Pivotal Elastic Runtime](http://docs.pivotal.io/pivotalcf/installing/index.html)
 * [Pivotal MySQL](http://docs.pivotal.io/p-mysql/1-8/index.html)
+* A MySQL service plan with a minimum size of 1GB. If your MySQL tile does not have a plan of sufficient size, you must [create one](http://docs.pivotal.io/p-mysql/1-8/index.html#service-plan). 
 
-Application Watchdog also requires a MySQL service plan with a minimum size of 1GB. If your MySQL tile does not have a plan of sufficient size, you must [create one](http://docs.pivotal.io/p-mysql/1-8/index.html#service-plan).
-<p class='note'>**Note:** If you try to install Application Watchdog with a MySQL service plan that is less than 1GB, it will fail to install.</p>
-
-### <a id='step1'></a> Step 1: Add the PCF Application Watchdog Tile to Ops Manager
+## <a id='add-tile'></a> Add the Application Watchdog Tile to Ops Manager
 
 1. Download the PCF Application Watchdog tile from
    [Pivotal Network](https://network.pivotal.io/products/pcf-appdog).
-1. Upload the PCF Application Watchdog tile to your Ops Manager installation.
+1. Upload the Application Watchdog tile to your Ops Manager installation.
 1. Click **Add** next to the uploaded product description in the **Available Products**
-   view to add PCF Application Watchdog to your **Installation Dashboard**.
+   view to add Application Watchdog to your **Installation Dashboard**.
 
-### <a id='step2'></a>Step 2: Configure the PCF Application Watchdog Tile
+## <a id='config'></a>Configure the Application Watchdog Tile
 
-From the **Installation Dashboard**, click the **PCF Application Watchdog** tile.
+1. From the **Installation Dashboard**, click the **PCF Application Watchdog** tile.
+   <p class='note'><strong>Note:</strong> The tile appears orange when it requires configuration.</p>
 
-<p class='note'><strong>Note:</strong> The tile appears orange when it requires configuration.</p>
+1. Keep the default settings for the **Assign AZs and Networks** pane.
 
-#### Availability Zones (AZs) and Networks.
+1. Click **Scanning**. By default, Application Watchdog scans all apps in your deployment.
 
-You can leave the default settings for this section.
+1. To restrict scanning to a set of orgs and/or spaces, click **Add** in the **Org/Space Whitelist** section:
+    ![Scanning](docs-appdog-scanning.png)
 
-#### Scanning Options
+    If you leave the **Space** field empty, Application Watchdog scans all apps in the org.
 
-If you leave the default settings in **Scanning**, Application Watchdog will scan all applications in your Cloud Foundry Deployment.
+1. Click **MySQL** and enter the name of a MySQL service plan. You can view a list of available service plans in your **Pivotal MySQL** tile settings or by running `cf marketplace -s p-mysql`. 
+	![MySQL Settings](docs-appdog-mysql.png)
 
-If you would like to restrict scanning to a set of orgs and/or spaces, you can click the "Add" button in the **Org/Space Whitelist** section:
+	<p class='note'><strong>Note</strong>: Application Watchdog fails to install if your MySQL service plan is less than 1GB.</p>
 
-![Scanning](docs-appdog-scanning.png)
+1. Keep the default settings for the **Errands** pane. 
+   * The **deploy** errand pushes the Application Watchdog server and worker to the `system` org and `appdog` space and creates a UAA client and a Pivotal MySQL database instance.
+   * The **smoke test** errand makes sure the [health-check endpoint](#healthcheck) returns true for all required components and verifies that Application Watchdog has successfully scanned itself.
+   * The **delete** errand destroys the `appdog` space and deletes the Application Watchdog database instance and UAA client.
 
-If you leave the **Space** field empty, all applications in the listed org will be scanned.
+1. Keep the default settings for the **Resource Config** and **Stemcell** panes. 
 
-#### MySQL Settings
+1. Click **Apply Changes** to install the service. Review the [Using PCF Application Watchdog](using.html) topic for information on how to install the Application Watchdog plugin, target your Application Watchdog server, and view data. 
 
-The only required setting for Application Watchdog is the MySQL service plan. You can see a list of available service plans in your **Pivotal MySQL** tile settings, or by running `cf marketplace -s p-mysql`.
-
-For example, if you have a service plan named `1gb`:
-![MySQL Settings](docs-appdog-mysql.png)
-
-   <p class='note'>**Note:** If you misspell your service plan name, **or** if your service plan has less than 1GB of space, Application Watchdog will fail to deploy.</p>
-
-#### Errands
-
-You can leave the default settings for this section.
-
-For reference, the **deploy** errand will push the Application Watchdog server and worker to the `system` org and `appdog` space, and creates a UAA client, and a Pivotal MySQL database instance.
-
-The **smoke test** errand makes sure the health-check endpoint (see below) is returning true for all required components, and verifies that Application Watchdog has successfully scanned itself.
-
-The **delete** errand destoys the `appdog` space, and deletes the Application Watchdog database instance and UAA client.
-
-#### Resource Config
-
-You can leave the default settings for this section.
-
-#### Stemcell
-
-You can leave the default settings for this section.
-
-### <a id='step3'></a>Step 3: Deploy PCF Application Watchdog
-
-Click **Apply Changes** to install the service. Review the [Using PCF Application Watchdog](using.html) topic for more information on how to connect, use, and interpret data from PCF Application Watchdog.
-
-## <a id='deploy-info'></a>Deployment Information
-#
-### <a id='performance-issues'></a> Performance Issues
-
-By default, Application Watchdog deploys one server instance with 1.5GB of memory, and four worker instances with 1GB of memory each to the `system` org and `appdog` space.
-
-If you want to increase the number of server or worker instances, you can manually target the Application Watchdog space and rescale using `cf scale`, for example:
-
-```
-cf target -o system -s appdog
-cf scale -i 8 appdog-worker
-```
-
-would rescale the workers from four to eight.
-
-<p class='note'>Note: Every time the deploy errand is run, it will reset the instance number and memory size for the Application Watchdog server and workers to the default values.</p>
-
-### <a id='healthcheck'></a> Healthcheck Endpoint
-
-If you are encountering problems with Application Watchdog, try to load the `/health` endpoint on the Application Watchdog server. For example:
-
-```
-$ curl https://appdog-server.example.com
-{"health":{"uaa":true,"workers":true,"db":true,"daily_scan_time":true},"optional":{"notifications":true}}
-```
-
-Each key gives a true/false value based on whether that component of Application Watchdog is functioning correctly.
-
-### <a id='connectivity-required'></a> Connectivity Requirements
-
-Application Watchdog requires access to the Internet in order to obtain its dependency, license, and vulnerability information. It will attempt to update its vulnerability database hourly.
