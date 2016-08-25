@@ -15,7 +15,8 @@ This topic describes how to log in to and use Application Watchdog. Application 
 
 Application Watchdog obtains its data from multiple sources. This includes dependency manifests and files present in deployed apps. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
 
-PCF Application Watchdog determines vulnerability information using publically available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
+PCF Application Watchdog determines vulnerability information using publicly available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/). 
+Application Watchdog updates its vulnerability database every hour.
 
 <p class="note"><strong>Note</strong>: Application Watchdog currently only supports scanning Java and Ruby apps.</p>
 
