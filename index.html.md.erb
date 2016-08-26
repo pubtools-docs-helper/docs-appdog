@@ -302,4 +302,19 @@ org.springframework:spring-beans   4.2.6.RELEASE   4.3.2.RELEASE    The Apache S
 To specify the org and space of the app, use the `--org` and `--space` options. If you do not specify
 an org and space, the command returns information for the currently targeted org and space.
 
+###<a id='appdog-dependencies'></a>Outputting Commands in CSV Format
 
+If you would like to consume the results of any command as CSV (for example, to import as a spreadsheet), you can use the `--format csv`` flag. For example:
+
+<pre class="terminal">
+$ cf appdog report appdog-server --format csv
+library name,library version,latest version available,license
+actionmailer,4.2.7.1,5.0.0.1,MIT
+actionpack,4.2.7.1,5.0.0.1,MIT
+actionview,4.2.7.1,5.0.0.1,MIT
+activejob,4.2.7.1,5.0.0.1,MIT
+activemodel,4.2.7.1,5.0.0.1,MIT
+activerecord,4.2.7.1,5.0.0.1,MIT
+[...]
+xml-simple,1.1.5,1.1.5,ruby
+</pre>
