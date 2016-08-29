@@ -122,30 +122,6 @@ This example shows that `test-app1` is a Ruby app running Ruby 2.2.4, and deploy
 
 The output also shows that the app has some outdated dependencies, and the rack dependency has a published security vulnerability.
 
-##<a id='notifications'></a> Subscribe to Email Notifications
-
-<%= vars.appdog_notifications %>
-
-
-Use the commands in the list below to subscribe to or opt out of email notifications:
-
-* **Vulnerabilities**: To receive emails about new vulnerabilities found in an app, run the following command:
-   <pre class="terminal">$ cf appdog opt-in-vulnerability MY-ORG MY-SPACE MY-APP command.</pre>
-* **Dependencies**: To receive emails about outdated dependencies in an app, run the following command: 
-   <pre class="terminal">$ cf appdog opt-in-dependency MY-ORG MY-SPACE MY-APP</pre>
-* **Dependencies and Vulnerabilities**: Subscribe to both vulnerability and dependency emails by running the following command:
-   <pre class="terminal">$ cf appdog opt-in-all</pre>
-* **No Emails**: Opt out of subscriptions by either clicking the unsubscribe link in the email, or by running the following command: 
-   <pre class="terminal">$ cf appdog opt-out-all MY-APP</pre>
-
-
-For CVEs, Application Watchdog sends emails to your login name if a CVE with a [Common Vulnerability Scoring System (CVSS)](https://www.first.org/cvss) score of 7.0 or higher is identified within an app. 
-
-For dependencies, Application Watchdog sends emails to your login name if any dependency in the app has a newer version available from the maintainer. The email includes the name of the app and a list of the CVEs affecting it.
-
-<p class="note"><strong>Note</strong>: Your login name must be an email address if you want to receive notification emails.</p>
-
-
 ## <a id='find'></a> Find Apps by Characteristic
 
 The following sections describe how to find app based on specific characteristics.
