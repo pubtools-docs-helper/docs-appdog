@@ -26,14 +26,14 @@ The following sections describe how to install the Application Watchdog plugin a
 
 ###Install the Application Watchdog Plugin
 
-To install the Application Watchdog plugin, perfom the following:
+To install the Application Watchdog plugin, perform the following:
 
 1. Download the plugin for your platform:  
      * [OSX](https://drive.google.com/uc?export=download&id=0B_mzIaaB_7qaenBNdTB1M1J5M3c)
      * [Windows](https://drive.google.com/uc?export=download&id=0B_mzIaaB_7qaeVBIanpad3Y4S2s)
      * [Linux](https://drive.google.com/uc?export=download&id=0B_mzIaaB_7qaZHNkRC10bDgtZzQ)
      
-1. Extract the plugin archive, which contains a single file called `appdog-cli` in an appdog-cli folder.
+1. Extract the plugin archive, which contains the `appdog-cli` file in an `appdog-cli` folder.
 
 1. Run the following command to install the plugin: 
    <pre class="terminal">$ cf install plugin PATH/TO/appdog-cli/appdog-cli</pre>
@@ -42,7 +42,7 @@ To install the Application Watchdog plugin, perfom the following:
 
 After installing the Application Watchdog plugin, run the following command to target the application server:
 
-   <pre class="terminal">$ cf appdog target http<span>s</span>://appdog-server.YOUR-SYSTEM-DOMAIN.</pre>
+   <pre class="terminal">$ cf appdog target http<span>s</span>://appdog-server.YOUR-SYSTEM-DOMAIN</pre>
 
 ###Verify the Application Server
 
@@ -52,7 +52,7 @@ To verify that the application server is working, run the following command:
 
 ##<a id="help"></a> Run the Help Command 
 
-To output a summary of all appdog commands, run `cf appdog help`. Run `cf appdog help <command>` to get usage information on a particular command, for example:
+To output a summary of all Application Watchdog commands, run `cf appdog help`. Run `cf appdog help COMMAND` to get usage information on a particular command, for example:
 
 <pre class="terminal">
 $ cf appdog help using
@@ -79,7 +79,7 @@ Application Watchdog also rescans apps daily.
 
 ###<a id='scanning-apps'></a> List Apps
 
-To see a summary of all apps scanned by Application Watchdog, run the `report` command. The following example shows four successfully scanned apps. 
+To see a summary of all apps scanned by Application Watchdog, run the `cf report` command. The following example shows four successfully scanned apps. 
 
 <pre class="terminal">
 $ cf appdog report
@@ -95,7 +95,8 @@ test-app2       test-org     test-space     2016-08-09T18:23:57.000Z   scanned s
 
 ###<a id='scan-reports'></a> View Scan Reports
 
-To see a report on the app `test-appl` located in the org `test-org` and space `test-space`, run `cf appdog report test-org test-space test-app1`. For example:
+To see a report on a specific app, run `cf appdog report ORG SPACE APP-NAME`, replacing `APP-NAME` with the name of an app and `ORG` and `SPACE` with the name of the org and space where the app runs. 
+See the following example.
 
 <pre class="terminal">
 $ cf appdog report test-org test-space test-app1
@@ -120,7 +121,7 @@ CVE-2015-3225   5.0             rack:1.5.2   https://web.nvd.nist.gov/view/vuln/
 
 This example shows that `test-app1` is a Ruby app running Ruby 2.2.4, and deployed with the Cloud Foundry Ruby Buildpack version 1.6.16.
 
-The output also shows that the app has some outdated dependencies, and the rack dependency has a published security vulnerability.
+The output also shows that the app has some outdated dependencies and that the rack dependency has a published security vulnerability.
 
 ## <a id='find'></a> Find Apps by Characteristic
 
@@ -153,7 +154,11 @@ Updates for:
 
 To find outdated dependencies for a single app, run the following command:
 
-<pre class="terminal">$ cf appdog updates --org test-org --space test-space test-app</pre>
+<pre class="terminal">$ cf appdog updates --org MY-ORG --space MY-SPACE APP-NAME</pre>
+
+Replace `APP-NAME` wth the name of the app and `MY-ORG` and `MY-SPACE` with the name of the org and space where the app runs.
+
+Running `cf appdog updates` without arguments returns a list of outdated dependences for all apps in your deployment.  
 
 ###<a id='appdog-using'></a> Find Apps Using a Specific Library
 
@@ -179,7 +184,7 @@ Optionally, specify a dependency version, or range of versions, with a second ar
 
 To limit your search to a specific org or space us the `--org` and `--space` options.
 
-The Java Buildpack my provide some dependencies, indicated by an asterisk. For example, the buildpack usually injects Java Runtime:
+The Java Buildpack may provide some dependencies, indicated by an asterisk. For example, the buildpack usually injects Java Runtime:
 
 <pre class="terminal">
 $ cf appdog using openjdk-jre
@@ -193,7 +198,7 @@ test-app2(*)   test-org   test-space   test-app2.local.pcfdev.io
 
 ###<a id='appdog-cve'></a> Find Apps with a Given CVE
 
-To list apps vulnerable to a specific CVE, run `cf appdog cve`. For example, to view Spring apps affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the following command:
+To list apps vulnerable to a specific CVE, run `cf appdog CVE-NAME`. For example, to view Spring apps affected by [CVE-2016-5007](https://pivotal.io/security/cve-2016-5007), run the following command:
 
 <pre class="terminal">
 $ cf appdog cve CVE-2016-5007
@@ -207,7 +212,7 @@ To limit your search to a specific org or space, use the `--org` and `--space` o
 
 ###<a id='appdog-cvss'></a> Find Apps with Vulnerabilities of a Specific Severity
 
-To list apps with vulnerabilities of a specific severity, run `cf appdog cvss`. For example, to list apps affected by vulnerabilities with a score greater than 7, run the following command:
+To list apps with vulnerabilities of a specific severity, run `cf appdog cvss SEVERITY-LEVEL`. For example, to list apps affected by vulnerabilities with a score greater than 7, run the following command:
 
 <pre class="terminal">
 $ cf appdog cvss '>7'
@@ -223,7 +228,7 @@ To limit your search to a specific org or space, use the `--org` and `--space` o
 
 ###<a id='appdog-license'></a> Find Apps with Dependencies Using a Specific License
 
-To list apps with dependencies using a specific license, run `cf appdog license`. For example, to list apps with MIT licensed dependencies, run the following command:
+To list apps with dependencies using a specific license, run `cf appdog license LICENSE`. For example, to list apps with MIT licensed dependencies, run the following command:
 
 <pre class="terminal">
 $ cf appdog license MIT
@@ -246,7 +251,7 @@ The following sections describe how to list app dependencies.
 
 ###<a id='appdog-dependencies'></a>List Dependencies of an App
 
-To list dependencies of a given app, you can use the command `cf appdog dependencies`. For example, to list dependencies of the `appdog-server`, run the command:
+To list dependencies of a given app, you can use the command `cf appdog dependencies APP-NAME`. For example, to list dependencies of the `appdog-server`, run the command:
 
 <pre class="terminal">
 $ cf appdog dependencies --org pcfdev-org --space pcfdev-space appdog-server
@@ -267,7 +272,7 @@ an org and space, the command returns information for the currently targeted org
 
 ###<a id='appdog-dependencies'></a>List Information about a Dependency for a Specific App
 
-To list information about a dependency for a specific app, run `cf appdog dependency-info`. For example, to list information about `org.springframework:spring-beans` for `spring-music`, you can run:
+To list information about a dependency for a specific app, run `cf appdog dependency-info APP-NAME`. For example, to list information about `org.springframework:spring-beans` for `spring-music`, you can run:
 
 <pre class="terminal">
 $ cf appdog dependency-info --org pcfdev-org --space pcfdev-space spring-music org.springframework:spring-beans
@@ -278,7 +283,7 @@ org.springframework:spring-beans   4.2.6.RELEASE   4.3.2.RELEASE    The Apache S
 To specify the org and space of the app, use the `--org` and `--space` options. If you do not specify
 an org and space, the command returns information for the currently targeted org and space.
 
-###<a id='output-commands'></a>Output Commands in CSV Format
+##<a id='output-commands'></a>Output Commands in CSV Format
 
 To view the output of a command in CSV format for purposes such as importing your data to spreadsheets, use the `--format csv` flag. For example:
 
