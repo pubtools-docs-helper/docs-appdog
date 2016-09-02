@@ -7,7 +7,7 @@ owner: PCF Application Watchdog
 This topic introduces the Pivotal Cloud Foundry (PCF) Application Watchdog service. 
 
 ##<a id="overview"></a>Overview
-The Application Watchdog service monitors information about apps deployed on Cloud Foundry, including:
+The Application Watchdog service monitors information about apps deployed on Cloud Foundry, including the following:
 
 * Tracking app dependencies
 * Identifying outdated dependencies
@@ -16,7 +16,7 @@ The Application Watchdog service monitors information about apps deployed on Clo
 
 <p class="note"><strong>Note</strong>: Application Watchdog currently only supports scanning Java and Ruby apps.</p>
 
-Application Watchdog obtains its data from multiple sources. This includes dependency manifests and files present in deployed apps. It obtains library version information from [rubygems.org](https://rubygems.org), [search.maven.org](https://search.maven.org) and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
+Application Watchdog obtains its data from multiple sources, including dependency manifests and files present in deployed apps. It obtains library version information from [rubygems.org](https://rubygems.org) and [search.maven.org](https://search.maven.org), and license information using [License Finder](https://github.com/pivotal/LicenseFinder).
 
 Application Watchdog determines vulnerability information using publicly available data sources such as the [National Vulnerability Database](https://nvd.nist.gov/).
 

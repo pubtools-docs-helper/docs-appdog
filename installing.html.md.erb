@@ -12,7 +12,7 @@ Before installing the Application Watchdog tile, ensure that you have following:
 
 * [Pivotal Elastic Runtime](http://docs.pivotal.io/pivotalcf/installing/index.html)
 * [Pivotal MySQL](http://docs.pivotal.io/p-mysql/1-8/index.html)
-* A MySQL service plan with a minimum size of 1GB. If your MySQL tile does not have a plan of sufficient size, you must [create one](http://docs.pivotal.io/p-mysql/1-8/index.html#service-plan). 
+* A MySQL service plan with a minimum size of 1&nbsp;GB. If your MySQL tile does not have a plan of sufficient size, you must [create one](http://docs.pivotal.io/p-mysql/1-8/index.html#service-plan). 
 
 ## <a id='add-tile'></a> Add the Application Watchdog Tile to Ops Manager
 
@@ -29,17 +29,16 @@ Before installing the Application Watchdog tile, ensure that you have following:
 
 1. Keep the default settings for the **Assign AZs and Networks** pane.
 
-1. Click **Scanning**. By default, Application Watchdog scans all apps in your deployment.
-
-1. To restrict scanning to a set of orgs and/or spaces, click **Add** in the **Org/Space Whitelist** section:
+1. Click **Scanning**. By default, Application Watchdog scans all apps in your deployment.  
+To restrict scanning to a set of orgs and/or spaces, click **Add** in the **Org/Space Whitelist** section and enter an org and space:
     ![Scanning](docs-appdog-scanning.png)
 
     If you leave the **Space** field empty, Application Watchdog scans all apps in the org.
 
-1. Click **MySQL** and enter the name of a MySQL service plan. You can view a list of available service plans in your **Pivotal MySQL** tile settings or by running `cf marketplace -s p-mysql`. 
+1. Click **MySQL** and enter the name of a MySQL service plan. You can view a list of available service plans in your **Pivotal MySQL** tile settings or by running `cf marketplace -s p-mysql` on the command line. 
 	![MySQL Settings](docs-appdog-mysql.png)
 
-	<p class='note'><strong>Note</strong>: Application Watchdog fails to install if your MySQL service plan is less than 1GB.</p>
+	<p class='note'><strong>Note</strong>: Application Watchdog fails to install if the size of your MySQL service plan is less than 1&nbsp;GB.</p>
 
 1. Keep the default settings for the **Errands** pane. 
    * The **deploy** errand pushes the Application Watchdog server and worker to the `system` org and `appdog` space and creates a UAA client and a Pivotal MySQL database instance.
